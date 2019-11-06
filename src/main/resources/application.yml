@@ -1,0 +1,15 @@
+server:
+  port: 8019
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/ 
+      suffix: .jsp
+  datasource:
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mariadb://localhost:3306/ds8?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    #driverClassName: org.mariadb.jdbc.Driver
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #url: jdbc:log4jdbc:mysql://127.0.0.1:3306/ds?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: root
+    password: 'ksb1234'

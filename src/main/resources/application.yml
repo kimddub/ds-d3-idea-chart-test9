@@ -1,3 +1,5 @@
+custom:
+  tm2Url: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler?
 server:
   port: 8019
 spring:

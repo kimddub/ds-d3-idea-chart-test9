@@ -17,8 +17,8 @@
 	#search {
 		width:500px;
 		margin:50px auto;
-		background-color:navy;
-		border:5px solid navy;
+		background-color:#003399;
+		border:5px solid #003399;
 		border-radius:30px;
 	}
 	
@@ -37,14 +37,17 @@
 	
 	#search input[type="submit"] {
 		width:14.4%;
-		background-color:navy;
+		background-color:#003399;
 		border:none;
 		border-radius:0 20px 20px 0;
 		padding:10px;
-		font-size:15px;
+		font-size:20px;
 		color:white;
-		font-weight:bold;
 		box-sizing:border-box;
+	}
+	
+	#search input[type="submit"]:hover {
+		font-weight:bold;
 	}
 	
 </style>
@@ -54,7 +57,7 @@
 
 	<div class="con">
 		
-		<h2 style="margin-top:200px; color:navy;">연관감성어 분석</h2>
+		<h2 style="margin-top:200px; color:#003399;">연관감성어 분석</h2>
 		
 		<form id="search" action="/d3/chart" method="POST" target="_blank">
 		

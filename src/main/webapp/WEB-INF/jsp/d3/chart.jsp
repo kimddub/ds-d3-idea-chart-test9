@@ -6,10 +6,15 @@
 <meta charset="UTF-8">
 <title>연관어 감성 분석</title>
 
-<link rel=stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="/lib/lib.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <style>
 	body {
 	    background-color:#eee;
+	}
+	
+	.con {
+		width:850px;
 	}
 	
 	h3 {
@@ -22,12 +27,33 @@
 	  text-align:center;
 	}
 	
+	.analysis-info {
+		text-align:center;
+		margin-bottom:50px;
+		color:gray;
+	}
+	
+	.analysis-info span {
+		font-size:13px;
+		font-weight:bold;
+	}
+	
+	#keyword {
+		background-color:coral;
+		padding:10px 20px;
+		border-radius:20px;
+		color:white;
+		font-weight:bold;
+		font-size:18px;
+	}
+	
 	#circleBarChart {
 		display:inline-block;
 		min-height:300px;
 	}
 	
 	#monthlyChart {
+		margin-top:30px;
 	}
 	
 	.chart-info {
@@ -64,13 +90,13 @@
 	
 	.here {
 	    fill:#dfdfdf;
-	    stroke:#ffffff;
+	    stroke:steelblue;
 	    stroke-width:5;
 	}
 	
 	.here:hover {
-	    fill:#ffffff;
-	    stroke:#ffffff;
+	    fill:steelblue;
+	    stroke:steelblue;
 	    r:8;
 	    stroke-width:5;
 	}
@@ -118,7 +144,6 @@
 <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 <!-- <script src="/d3/d3.min.js"></script> -->
 <script>
-
 	var dataset = ${data};
 
 	function parseDate(str) {
@@ -128,9 +153,13 @@
 	    return new Date(y,m-1,d);
 	}
 
+	function parseNum(x) {
+	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+
 	function redrawCircleBarChart(th) { // 파라미터: 몇월, tm2JsonData(:circleChart의 파라미터)
 
-		var analysisDate = dataset[th - 1].date;
+		var analysisDate = dataset[th].date;
 		
 		// 상세 긍부정 차트 조회 월 수정
 		$('#detail-month').empty();
@@ -171,7 +200,7 @@
 		$('#detail-month').append(analysisEndDate.substr(0,4) + "년 " + analysisEndDate.substr(4,2) + "월");
 
 		// 상세 긍부정 차트 마지막 월로 초기셋팅
-		redrawCircleBarChart(12);
+		redrawCircleBarChart(dataset.length - 1);
 
 		
 	//// monthly chart ////
@@ -249,21 +278,27 @@
 	svg.selectAll(".dot")
 	    .data(dataset).enter().append("circle") // Uses the  enter().append() method
 	    .attr("class", "dot") // Assign a class for styling
+	    .attr("th", function(d,i){ return i; })
 	    .attr("cx", function(d, ijk) { return xScale(+parseDate(d.date)) })
 	    .attr("cy", function(d) { return yScale(+d.score) })
 	    .attr("r", 5)
 	    .on("mouseover", function(d,i) { 
-	       var htmlStr = (i + 1) + "th data info";
-	       div.transition()
+		    var id = d3.select(this).attr("th");
+		       var htmlStr = dataset[id].date.substr(4,2) + "월</br>";
+		       htmlStr += "긍정: " + parseNum(dataset[id].positive) + "건</br>";
+		       htmlStr += "중립: " + parseNum(dataset[id].neutral) + "건</br>";
+		       htmlStr += "부정: " + parseNum(dataset[id].negative) + "건</br>";
+		       
+	       tooltip.transition()
 	         .duration(200)
 	         .style("opacity", .9);
-	       div.html(htmlStr)
+	       tooltip.html(htmlStr)
 	         .style("left", (d3.event.pageX + 28) + "px")
 	         .style("top", (d3.event.pageY - 50) + "px");
 	        d3.select(this).classed('focus', true);
 		})
         .on("mouseout", function(d) {
-	         div.transition()
+        	tooltip.transition()
 	           .duration(500)
 	           .style("opacity", 0);
 	       d3.select(this).classed('focus', false);
@@ -272,22 +307,27 @@
 
     svg.append("circle") // draggable circle to near point
 	    .attr("class", "here") 
-	    .attr("th", "12")
+	    .attr("th", dataset.length - 1)
 	    .attr("cx", xScale(+parseDate(analysisEndDate)))
 	    .attr("cy", yScale(+dataset[dataset.length - 1].score))
 	    .attr("r", 5)
 	    .on("mouseover", function() { 
-	       var htmlStr = d3.select(this).attr("th") + "th data info";
-	       div.transition()
+		    var id = d3.select(this).attr("th");
+	       var htmlStr = dataset[id].date.substr(4,2) + "월</br>";
+	       htmlStr += "긍정: " + parseNum(dataset[id].positive) + "건</br>";
+	       htmlStr += "중립: " + parseNum(dataset[id].neutral) + "건</br>";
+	       htmlStr += "부정: " + parseNum(dataset[id].negative) + "건</br>";
+	       
+	       tooltip.transition()
 	         .duration(200)
 	         .style("opacity", .9);
-	       div.html(htmlStr)
+	       tooltip.html(htmlStr)
 	         .style("left", (d3.event.pageX + 28) + "px")
 	         .style("top", (d3.event.pageY - 50) + "px");
 	        d3.select(this).classed('focus', true);
 		})
         .on("mouseout", function() {
-	         div.transition()
+        	tooltip.transition()
 	           .duration(500)
 	           .style("opacity", 0);
 	       d3.select(this).classed('focus', false);
@@ -300,24 +340,25 @@
                .on("drag", function(d) {
 	               d3.select(this)
 	               .attr("cx", function(){
-		               var xCoordi = (d3.event.x)/(width/12);
+		               var xCoordi = (d3.event.x)/(width/dataset.length);
 	            	   return xScale(parseDate(dataset[Math.floor(xCoordi)].date)); })
 	               .attr("cy", function(){
-		               var xCoordi = (d3.event.x)/(width/12);
+		               var xCoordi = (d3.event.x)/(width/dataset.length);
 	            	   return yScale(dataset[Math.floor(xCoordi)].score); });
                })
                .on("end",  function(d) {
-					var th = Math.ceil((d3.event.x)/(width/12));
+					var th = Math.ceil((d3.event.x)/(width/dataset.length)) - 1;
                    
             	   d3.select(this).attr("th", th);
                    d3.select(this).attr("r", 5).classed("active", false);
-
+                   
                    redrawCircleBarChart(th);
+                   
                })
             );
 
 		// Tooltip
-		var div = d3.select("body").append("div")
+		var tooltip = d3.select("body").append("div")
 		    .attr("class", "tooltip")
 		    .style("opacity", 0);
 	});
@@ -328,7 +369,32 @@
 </head>
 <body>
 
-	<h3 style="text-align: center">your Keyword : ${keyword}</h3>
+	<div class="analysis-info con">
+		<h3 style="text-align: center">연관감성어 분석</h3>
+		<div style="margin-top:20px; margin-bottom:30px;">
+			<span id="keyword">${keyword}</span>
+		</div>
+		
+		<nav class="row">
+			<div class="cell">
+				<span>매체: </span>
+				<select>
+					<option>instagram</option>
+				</select>
+			</div>
+			
+			<div class="cell-right">
+				<span>기간: </span>
+				<select>
+					<option>1 year ago</option>
+				</select>
+				<span> ~ </span>
+				<select>
+					<option>current</option>
+				</select>
+			</div>
+		</nav>
+	</div>
 	
 	<div class="detailChart chart" >
 		<div class="chart-info">

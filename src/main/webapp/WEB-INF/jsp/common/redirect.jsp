@@ -14,9 +14,14 @@
 	var msg = "${alertMsg}";
 	var redirectUrl = "${redirectUrl}";
 	var historyBack = "${historyBack}";
+	var closeWindow = "${closeWindow}";
 
 	if (msg.trim().length != 0) {
 		alert(msg);
+	}
+
+	if (closeWindow == "true") {
+		window.close();
 	}
 	
 	if (historyBack == "true") {

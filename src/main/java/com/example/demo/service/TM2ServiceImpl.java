@@ -136,6 +136,9 @@ public class TM2ServiceImpl implements TM2Service{
 					
 					data.put("date", regDate);
 					data.put("score", sentimentScore);
+					data.put("positive", positive);
+					data.put("negative", negative);
+					data.put("neutral", neutral);
 					
 					dataList.add(data);
 				}
@@ -213,7 +216,7 @@ public class TM2ServiceImpl implements TM2Service{
 			source = "twitter";
 		} 
 		
-		String urlBasicTm2Condition = "lang=ko&source=insta&topN=10&cutOffFrequencyMin=0&cutOffFrequencyMax=0&categorySetName=SM&command=GetAssociationBySentiment";
+		String urlBasicTm2Condition = "lang=ko&topN=10&cutOffFrequencyMin=0&cutOffFrequencyMax=0&categorySetName=SM&command=GetAssociationBySentiment";
 		String urlKeyword = "&keyword=" + URLEncoder.encode(keyword);
 		String urlSource = "&source=" + source; // insta, blog, twitter, news ...
 		String urlStartDate = "&startDate=" + startDate;
@@ -224,6 +227,8 @@ public class TM2ServiceImpl implements TM2Service{
 									+ urlSource
 									+ urlStartDate 
 									+ urlEndDate;
+		
+		System.out.println(keywordUrl);
 				
 		return keywordUrl;
 	}
@@ -243,6 +248,8 @@ public class TM2ServiceImpl implements TM2Service{
 			
 			result.put("positive", positive);
 			result.put("negative", negative);
+			
+			System.out.println(positive + ", " + negative);
 			
 		}catch(Exception e){ 
 			System.out.println(e.getMessage()); 

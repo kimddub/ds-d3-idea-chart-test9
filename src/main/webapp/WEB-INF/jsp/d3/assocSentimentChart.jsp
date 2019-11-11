@@ -116,13 +116,6 @@ body {
 	function drawCircleBarChart(sentimtntData,palette,target,sentimentRatio,values,labels){
 		var data = sentimtntData.assoc,
 			ratio = sentimtntData.ratio;
-
-		if (ratio == 0) {
-			d3.select(target)
-				.append("test");
-
-			return false;
-		}
 		
 		var fill = palette;
 		
@@ -176,7 +169,13 @@ body {
 	    ratioText.append("tspan")
 			.attr("x",0)
 			.attr("y",0)
-		    .text(parseFloat(ratio*100).toFixed(1) + "%");
+		    .text(function(){
+
+				if (ratio == 0) {
+					return "데이터 없음";
+				}
+				
+			    return parseFloat(ratio*100).toFixed(1) + "%"; });
 	
 	
 	    function arcTween(b) {

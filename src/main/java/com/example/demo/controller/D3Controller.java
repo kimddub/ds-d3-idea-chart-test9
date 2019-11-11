@@ -38,14 +38,14 @@ public class D3Controller {
 		if (jsonResult == null) {
 			
 			model.addAttribute("alertMsg","서버 오류");
-			model.addAttribute("historyBack","true");
+			model.addAttribute("closeWindow", "true");
 			
 			return "common/redirect";
 			
 		} else if (jsonResult.size() < 1){
 			
 			model.addAttribute("alertMsg","분석 정보가 없음");
-			model.addAttribute("historyBack","true");
+			model.addAttribute("closeWindow", "true");
 			
 			return "common/redirect";
 			

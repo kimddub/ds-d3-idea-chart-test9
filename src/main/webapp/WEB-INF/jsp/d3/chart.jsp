@@ -88,13 +88,13 @@
 	    cursor:pointer;
 	}
 	
-	.here {
+	#here {
 	    fill:#dfdfdf;
 	    stroke:steelblue;
 	    stroke-width:5;
 	}
 	
-	.here:hover {
+	#here:hover {
 	    fill:steelblue;
 	    stroke:steelblue;
 	    r:8;
@@ -187,14 +187,21 @@
 	$(function() {
 		var today = new Date();
 		var dd = today.getDate() < 10 ? '0'+today.getDate() : today.getDate();
-		
-		var analysisStartDate = dataset[0].date;
-		var analysisEndDate = dataset[dataset.length - 1].date;
-		var analysisToday = dataset[dataset.length - 1].date.substr(0,6) + dd;
+		var mm = today.getMonth() + 1;
 
+		// 조회날짜용 셋팅
+		var today = dataset[dataset.length - 1].date.substr(0,6) + dd;
+		var lastDay = ( new Date( dataset[dataset.length - 1].date.substr(0,4), dataset[dataset.length - 1].date.substr(4,2), 0) ).getDate();
+
+		// 차트를 실제 조회하고, 조회기록을 하는데 있어 금월은 오늘의 일자까지로 설정
+		var analysisStartDate = dataset[0].date;
+		var analysisEndDate = dataset[dataset.length - 1].date.substr(4,2) == mm ? today : 
+								dataset[dataset.length - 1].date.substr(0,6) + lastDay;
+
+		var chartEndDate = dataset[dataset.length - 1].date; //차트를 그리는데 있어 각 월의 1일을 기준으로 잡는다
 
 		// 차트 조회 날짜 넣기
-		$('#analysis-date').append(analysisStartDate + " ~ " + analysisToday);
+		$('#analysis-date').append(analysisStartDate + " ~ " + analysisEndDate);
 
 		// 상세 긍부정 차트 조회 월 넣기
 		$('#detail-month').append(analysisEndDate.substr(0,4) + "년 " + analysisEndDate.substr(4,2) + "월");
@@ -219,7 +226,7 @@
 	  
 	// 5. X scale will use the index of our data
 	var xScale = d3.scaleTime()
-	    .domain([parseDate(analysisStartDate), parseDate(analysisEndDate)]) // input
+	    .domain([parseDate(analysisStartDate), parseDate(chartEndDate)]) // input
 	    .range([0, width]); // output
 
 	// 6. Y scale will use the randomly generate number 
@@ -302,13 +309,23 @@
 	           .duration(500)
 	           .style("opacity", 0);
 	       d3.select(this).classed('focus', false);
+		})
+		.on("click", function(d) {
+			var id = d3.select(this).attr("th");
+           
+           redrawCircleBarChart(id);
+           
+           d3.select('#here')
+			    .attr("cx", xScale(+parseDate(d.date)))
+			    .attr("cy", yScale(+d.score));
+           
 		});
 
 
     svg.append("circle") // draggable circle to near point
-	    .attr("class", "here") 
+	    .attr("id", "here") 
 	    .attr("th", dataset.length - 1)
-	    .attr("cx", xScale(+parseDate(analysisEndDate)))
+	    .attr("cx", xScale(+parseDate(chartEndDate)))
 	    .attr("cy", yScale(+dataset[dataset.length - 1].score))
 	    .attr("r", 5)
 	    .on("mouseover", function() { 

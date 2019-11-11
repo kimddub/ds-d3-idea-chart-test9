@@ -75,9 +75,24 @@ body {
 	$(function(){
 	
 		// Animation Queue
-		setTimeout(function(){drawCircleBarChart(chartData.positive,pPalette,"#positive-chart","#positive-chart-ratio","#positive-chart-values","#positive-chart-labels")},500);
-		setTimeout(function(){drawCircleBarChart(chartData.negative,nPalette,"#negative-chart","#negative-chart-ratio","#negative-chart-values","#negative-chart-labels")},800);
-
+		if (chartData.positive.ratio != 0) {
+			setTimeout(function(){drawCircleBarChart(chartData.positive,pPalette,"#positive-chart","#positive-chart-ratio","#positive-chart-values","#positive-chart-labels")},500);
+		} else {
+			d3.select("#positive-chart-ratio")
+			.append("tspan")
+			.attr("x",0)
+			.attr("y",0)
+		    .text("No Data");
+		}
+		if (chartData.negative.ratio != 0) {
+			setTimeout(function(){drawCircleBarChart(chartData.negative,nPalette,"#negative-chart","#negative-chart-ratio","#negative-chart-values","#negative-chart-labels")},800);
+		} else {
+			d3.select("#negative-chart-ratio")
+			.append("tspan")
+			.attr("x",0)
+			.attr("y",0)
+		    .text("No Data");
+		}
 		
 		d3.select("#positive-chart-type")
 		    .transition()
@@ -169,13 +184,7 @@ body {
 	    ratioText.append("tspan")
 			.attr("x",0)
 			.attr("y",0)
-		    .text(function(){
-
-				if (ratio == 0) {
-					return "데이터 없음";
-				}
-				
-			    return parseFloat(ratio*100).toFixed(1) + "%"; });
+		    .text(parseFloat(ratio*100).toFixed(1) + "%");
 	
 	
 	    function arcTween(b) {
@@ -198,7 +207,7 @@ body {
         <!-- Circle Bar Chart 1 -->
         <g id="positive-group" transform="translate(0,0)">
         	<text id="positive-chart-type" opacity="0" x="190" y="30">긍정</text>
-        	<text id="positive-chart-ratio" opacity="0" transform="translate(180,175)"></text>         
+        	<text id="positive-chart-ratio" opacity="0" transform="translate(170,175)"></text>         
             
             <g id="positive-chart" transform="translate(215,170)"></g>
             
@@ -216,7 +225,7 @@ body {
         <!--Circle Bar Chart 2 -->
         <g id="negative-group" transform="translate(362,0)">
         	<text id="negative-chart-type" opacity="0" x="190" y="30">부정</text>
-        	<text id="negative-chart-ratio" opacity="0" transform="translate(180,175)"></text>
+        	<text id="negative-chart-ratio" opacity="0" transform="translate(170,175)"></text>
             
             <g id="negative-chart" transform="translate(215,170)"></g>
             
